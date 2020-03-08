@@ -4,7 +4,7 @@
 '''
 Simplest implementation of GOL in pygame.
 
-Watch the glider :)
+Watch the game of life :)
 '''
 
 from random import randint
@@ -14,34 +14,64 @@ from pygame.locals import *
 
 import simplest_gol as gol
 
-WINDOWHEIGHT = 600  # hauteur de la fenetre
-WINDOWWIDTH = 600  # LARGEUR de la fenetre
+WINDOWHEIGHT = 700  # hauteur de la fenetre
+WINDOWWIDTH = 800  # LARGEUR de la fenetre
 
 BACKGROUNDCOLOR = (0, 0, 0)  # black
 DOTCOLOR = (255, 255, 255)  # white
 OBJCOLOR = (255, 0, 0)  # red
 BESTCOLOR = (0, 255, 0)  # green
 OBSTACLECOLOR = (0, 255, 255)  # cyan
-TEXTCOLOR = (255, 255, 0)  # yellow
+TEXTCOLOR = (255, 200, 0)  # yellow
 
-FPS = 5
+FPS = 20
 
-LARGEUR = 30
+LARGEUR = 15
 SIZE = WINDOWWIDTH / LARGEUR
 
 ############################################################
 #####################   FUNCTIONS    #######################
 ############################################################
 
+presentation = '''
 
-def out_bound(glider):
-    return max([abs(coord) for elt in glider for coord in elt]) > SIZE
+  ############################################################################
+  #                                                                          #
+  # Le Jeu de la vie                                                         #
+  #                                                                          #
+  # Le jeu de la vie est un automate cellulaire imaginé par John Conway en   #
+  # 1970 et qui est le plus connu de tous les automates cellulaires.         #
+  #                                                                          #
+  # Le jeu de la vie est un « jeu à zéro joueur ».                           #
+  #                                                                          #
+  # Le jeu se déroule sur une grille infinie. Chaque case (une cellulle)     #
+  # comporte deux états : vivante ou morte.                                  #
+  #                                                                          #
+  # À chaque tour, on calcule l'état suivant d'une cellule en fonction       #
+  # de son état et de celui de ses voisines.                                 #
+  #                                                                          #
+  # On affiche ensuite l'état suivant.                                       #
+  #                                                                          #
+  # Voici les règles :                                                       #
+  #                                                                          #
+  # * une cellule morte possédant exactement trois voisines vivantes         #
+  #     devient vivante (elle naît) ;                                        #
+  # * une cellule vivante possédant deux ou trois voisines vivantes le reste,#
+  #     sinon elle meurt.                                                    #
+  #                                                                          #
+  ############################################################################
+
+'''
+
+
+def out_bound(figure):
+    return max([abs(coord) for elt in figure for coord in elt]) > SIZE
 
 
 def drawCell(point):
     x, y = point
-    x *= -1
-    y *= -1
+    # x *= -1
+    # y *= -1
     cell_rect = pygame.Rect(x * LARGEUR, y * LARGEUR, LARGEUR, LARGEUR)
     pygame.draw.rect(windowSurface, (255, 200, 0), cell_rect)
 
@@ -56,6 +86,7 @@ def terminate():
 
 def waitForPlayerToPressKey():
     # quitte le jeu au menu de depart
+    print(presentation)
     while True:
         for event in pygame.event.get():
             if event.type == QUIT:  # bouton fermer
@@ -117,17 +148,11 @@ while True:
         # Draw the game world on the window.
         windowSurface.fill(BACKGROUNDCOLOR)
 
-        # import pdb; pdb.set_trace()
-        # Draw the scores
-        # drawText(str(score), font, windowSurface, 0.5*WINDOWWIDTH, 0.5*WINDOWHEIGHT)
+        gol.figure = gol.advance(gol.figure)
+        # if out_bound(gol.figure):
+        #     cont = False
 
-        gol.glider = gol.advance(gol.glider)
-        if out_bound(gol.glider):
-            cont = False
-
-        # map(drawCell, gol.glider)
-
-        for cell in gol.glider:
+        for cell in gol.figure:
             drawCell(cell)
 
         # pygame : tick, update
@@ -136,6 +161,7 @@ while True:
 
     # pygame : update, reset
     pygame.display.update()
-    # waitForPlayerToPressKey()
+
     cont = True
-    gol.glider = gol.init_glider()
+    # gol.figure = gol.init_glider()
+    gol.figure = gol.init_gun()
