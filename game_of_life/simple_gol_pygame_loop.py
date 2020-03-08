@@ -65,7 +65,7 @@ presentation = '''
 
 
 def out_bound(figure):
-    return max([abs(coord) for elt in figure for coord in elt]) > SIZE
+    return max([abs(coord) for elt in figure for coord in elt]) > SIZE * 2
 
 
 def drawCell(point):
@@ -149,8 +149,8 @@ while True:
         windowSurface.fill(BACKGROUNDCOLOR)
 
         gol.figure = gol.advance(gol.figure)
-        # if out_bound(gol.figure):
-        #     cont = False
+        if out_bound(gol.figure):
+            cont = False
 
         for cell in gol.figure:
             drawCell(cell)
