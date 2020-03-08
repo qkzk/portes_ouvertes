@@ -8,3 +8,4 @@ date: 2020/03/08
 ## Liste des jeux
 
 1. [dodger](dodger)
+2. [2048](2048)

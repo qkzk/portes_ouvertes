@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>2048</title>
+<style> 
+	body{
+		background-color:write
+
+	}
+
+</style>
+<script >
+	
+//variables internes
+//variables
+
+var boucleJeu; //appelée pour refresh
+var intervalTemps = 30; //temps entre 2 refresh en ms
+var context; //le contexte 2d
+ 
+// Constantes du jeu
+var largeur_fenetre = 600; //taille du canvas
+var hauteur_fenetre = 600; //hauteur du canvas
+
+// variables pour les animations
+var k = 0; // durée restante de l'animation
+var ii = 0 // ligne nlle tuile
+var jj = 0 // ord nll tuile
+
+// peut on faire ce déplacement ?
+var mvtPossible = false;
+
+var alive = true;
+var grille = tableauDepart();
+
+
+// tableaux pour les tests
+var tableauPresentation = [ // toutes les valeurs pour affichage
+[0,2,4,8],
+[32,2,128,1024],
+[16,64,256,256],
+[2048,4096,512,0],
+]; 
+
+
+var tableau_dessai=[
+[2,2,2,2],
+[4,4,4,0],
+[2,4,2,0],
+[2,0,2,2]
+];
+
+var resultat_attendu = [
+[4,4,0,0],
+[8,4,0,0],
+[2,4,2,0],
+[4,2,0,0],
+];
+
+
+var resultatDROITE = [
+[0,0,4,4],
+[0,0,4,8],
+[0,2,4,2],
+[0,0,2,4]
+];
+
+var resultatHAUT = [
+[2,2,2,4],
+[4,8,4,0],
+[4,0,4,0],
+[0,0,0,0]
+]
+
+var resultatBAS = [
+[0,0,0,0],
+[2,0,2,0],
+[4,2,4,0],
+[4,8,4,4]
+]
+
+
+/*
+Manipulation de tableaux
+*/
+
+
+function tableauDepart(){
+	/*
+	renvoie un tableau initial avec 2 cases remplies
+	*/
+	sortie = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
+	var ligne1 = Math.floor(4*Math.random())
+	var colonne1 = Math.floor(4*Math.random())
+
+	var ligne2 = Math.floor(4*Math.random())
+	var colonne2 = Math.floor(4*Math.random())
+	while((ligne1 == ligne2) && (colonne1 == colonne2)){
+		ligne2 = Math.floor(4*Math.random())
+		colonne2 = Math.floor(4*Math.random())
+	}
+	sortie[ligne1][colonne1] = 2
+	sortie[ligne2][colonne2] = 2
+	return sortie
+}
+
+// console.log(tableauDepart());
+
+function deplacerZero(ligne){
+	// deplace les elements du tableau pour regrouper les 0 pouvant se déplacer à droite.
+	if (ligne[0] == 0 && ligne[1] == 0 && ligne[2] == 0){
+		ligne[0] = ligne[3];
+		ligne[3] = 0;
+	}
+	if (ligne[0] == 0 && ligne[1] == 0){
+	ligne[0] = ligne[2];
+	ligne[1] = ligne[3];
+	ligne[2] = 0;
+	ligne[3] = 0;
+	}
+	else if (ligne[1] == 0 && ligne[2] == 0){
+		ligne[1] = ligne[3]
+		ligne[2] = 0
+		ligne[3] = 0
+	}
+	else {
+		if(ligne[0]==0){
+	        ligne[0]=ligne[1]
+	        ligne[1]=ligne[2]
+	        ligne[2]=ligne[3]
+	        ligne[3]=0
+		}
+	    if (ligne[1]==0){
+	        ligne[1]=ligne[2]
+	        ligne[2]=ligne[3]
+	        ligne[3] = 0
+	    }
+	    if (ligne[2]==0){
+	        ligne[2]=ligne[3]
+	        ligne[3]=0
+	    }
+	}
+    return ligne
+}
+/*console.log("deplacerZero")
+console.log(deplacerZero([2,0,0,2]));*/
+
+function aGauche2(tableau){
+
+	// la seule fonction qui realise les additions, seulement vers la gauche
+	sortie = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
+
+    for(var i=0; i<4; i++){
+    	ligne = [0,0,0,0]
+    	for (var j = 0; j < 4; j++) {
+    		ligne[j] = tableau[i][j]
+    	}
+    	// console.log(" ")
+    	// console.log("LIGNE " + i)
+    	// console.log("on travaille sur la ligne :")
+    	// console.log(ligne)
+
+    	// console.log("on deplace les zeros :")
+    	ligne = deplacerZero(ligne)
+    	// console.log(ligne)
+
+    	// console.log("on ajoute les nombres")
+    	if(ligne[1]==ligne[0]){
+    		ligne[0] = 2*ligne[0];
+    		// console.log("cas 0")
+    		// console.log(ligne)
+	    	if (ligne[3]==ligne[2]){
+	            ligne[1]=2*ligne[2]
+	            ligne[2]=ligne[3]=0
+	    		// console.log("cas 0 - 1")
+	    		// console.log(ligne)
+	        }
+	        else{	
+	            ligne[1]=ligne[2]
+	            ligne[2]=ligne[3]
+	            ligne[3]=0
+	    		// console.log("cas 0 - 2")
+	    		// console.log(ligne)
+	        }
+    	}
+    	else if(ligne[2]==ligne[1]){
+            ligne[1]=2*ligne[1]
+            ligne[2]=ligne[3]
+            ligne[3]=0
+        }
+        else if (ligne[3]==ligne[2]){
+        	ligne[2]=2*ligne[2]
+            ligne[3]=0
+        }
+        // console.log(ligne)
+        // console.log(" ")
+        sortie[i] = ligne
+
+    }
+    // compare le résultat avec la grille de départ, si ce n'est pas different, le mvt n'est pas possible
+    different = false;
+    for(var i=0; i<4; i++){
+    	for(var j=0; j<4; j++){
+    		if(grille[i][j] != sortie[i][j]){
+    			different = true;
+    		}
+    	}
+    }
+    mvtPossible = different
+    // console.log("est ce possible ?")
+    // console.log(mvtPossible)
+    return sortie
+}
+
+function retournerLigne(tableau){
+	// retourne toutes les lignes
+	sortie = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
+	for(var i=0; i<4; i++){
+		for(var j=0; j<4; j++){
+			sortie[i][j] = tableau[i][3-j];
+		}
+	}
+	return sortie
+}
+
+
+function transposer(tableau){
+	// renvoie la transposée
+	sortie = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
+	for(var i=0; i<4; i++){
+		for(var j=0; j<4; j++){
+			sortie[i][j] = tableau[j][i];
+		}
+	}
+	return sortie
+}
+
+function aDroite(tableau){
+	// retourner, gauche, retourner
+	return retournerLigne(aGauche2(retournerLigne(tableau)));
+}
+
+function enHaut(tableau){
+	// transposer, gauche, transposer
+	return transposer(aGauche2(transposer(tableau)));
+}
+
+function enBas(tableau){
+	// transposer, retourner, gauche, retourner, transposer
+	return transposer(retournerLigne( aGauche2( retournerLigne( transposer(tableau) ) ) ) );
+}
+
+function deplacer(tableau, direction){
+	// choisit la bonne direction pour agir sur le tableau
+	// etape inutile pourrait etre zappee
+	if (direction == "GAUCHE"){
+		return aGauche2(tableau)
+	}	
+	if (direction == "DROITE"){
+		return aDroite(tableau)
+	}	
+	if (direction == "HAUT"){
+		return enHaut(tableau)
+	}	
+	if (direction == "BAS"){
+		return enBas(tableau)
+	}
+}
+
+function zeros(tableau){
+	// compte les zeros pour detecter un game over
+	// renvoie aussi la cellule où on a ajoute une tuile pour l'animation
+	/*
+	à revoir, le BON game over, c'est qd aucun mvt n'est possible
+	*/
+	var nbZeros = 0;
+	var listeZeros = [];
+	for(var i=0; i<4; i++){
+		for(var j=0; j<4; j++){
+			if(tableau[i][j] == 0){
+				nbZeros++;
+				listeZeros.push(i + " " + j)
+			}
+		}
+	}
+	// console.log(nbZeros)
+	if(nbZeros == 0){
+		alive = false;
+		return [tableau,0,0]	
+	}
+	else{
+		var coordonneesZero = listeZeros[Math.floor(Math.random()*listeZeros.length)];
+		// console.log(coordonneesZero)
+		var ligne = Number(coordonneesZero.charAt(0));
+		var colonne = Number(coordonneesZero.charAt(2));
+		tableau[ligne][colonne] = 2*Math.floor(2*Math.random()) + 2
+		return [tableau, ligne, colonne]
+	}
+}
+
+function comparerTableau(tableau1, tableau2){
+	// fonction de test pour le developpement
+	/*
+	compare les éléments de 2 tableaux 4x4 et affiche dans la console les différences
+	affiche le nombre d'elements différents s'il y en a
+	*/
+	var compteur = 0;
+	for(var i=0; i<4; i++){
+		for(var j=0; j<4; j++){
+			if(tableau1[i][j] != tableau2[i][j]){
+				console.log("difference ligne " + i + " colonne " + j);
+				compteur++
+			}
+		}
+	}
+	console.log("Il y a " + compteur + " differences")
+
+}
+
+/*
+affichage et gestion des événements
+*/
+
+/*
+CANVAS
+*/
+//à chaque reload
+window.addEventListener('load', function () {
+  // On récupère l'objet canvas
+  var elem = document.getElementById('canvasElem');
+  if (!elem || !elem.getContext) {
+	return;
+  }
+  // On récupère le contexte 2D
+  context = elem.getContext('2d');
+  if (!context) {
+	return;
+  } 
+  // Boucle de rafraichissement du contexte 2D
+  boucleJeu =setInterval(refreshGame, intervalTemps); //refresh tous les x ms
+false
+})
+/*
+Boucle de rafraichissement
+*/
+
+function refreshGame() {
+
+
+	//nettoyage de l'ecran
+	context.clearRect(0,0,largeur_fenetre,hauteur_fenetre);
+	context.fillStyle="#776e65";
+	for(var i = 0; i<= 600; i=i+148) { context.fillRect(0+i,0,10, 600); }
+	for(var i = 0; i<= 600; i=i+148) { context.fillRect(0,0+i, 600,10); }	
+
+
+	//afficherTableau(tableauPresentation)
+	if(k > 0){
+		k = k -15;
+	}
+	else if(k < 0){
+		k = 0;
+	}
+	afficherTableau(grille, ii, jj, k)
+	if(alive == true){
+		window.document.onkeydown = clavier;
+	}
+	else{
+		console.log("GAME OVER")
+	}
+}
+
+function nombres(nb, x, y, couleurNombre){
+	// ecrit un nombre dans le canvas aux coordonnées x, y
+	context.fillStyle = couleurNombre;
+	context.font = "48px Arial";
+	context.fillText(nb, x, y);
+}
+
+function nombreCase(nb, i, j, ii, jj, k){
+	// écrit un nombre dans à la ligne i et à la colonne j
+	// colore aussi la tuile
+	// si c'est une nouvelle tuile sa taille dépend de k, qui compte depuis combien de temps elle est apparue
+
+	// on détermine le nombre de chiffres : on convertit en STRING puis on compte le nombre de caractères
+	var tailleNombre = nb.toString().length ;
+	switch (nb) {
+		case 2:
+			couleurNombre = '#776e65'
+			couleurFond = '#EEE4DA'
+			break;
+		case 4:
+			couleurNombre = '#776e65'
+			couleurFond = '#ede0c8'
+			break;
+		case 8:
+			couleurNombre = '#f9f6f2'
+			couleurFond = '#f2b179'
+			break;
+		case 16:
+			couleurNombre = '#f9f6f2'
+			couleurFond = '#f59563'
+			break;
+		case 32:
+			couleurNombre = '#f9f6f2'
+			couleurFond = '#f67c5f'
+			break;
+		case 64:
+			couleurNombre = '#f9f6f2'
+			couleurFond = '#f65e3b'
+			break;
+		case 128:
+			couleurNombre = '#f9f6f2'
+			couleurFond = '#edcf72'
+			break;
+		default:
+			couleurNombre = '#f9f6f2'
+			couleurFond = '#edcf72'
+	}
+	// on decalle de 74 pixels (demi largeur) puis on decalle à gauche selon la longueur, enfin on ajoute un facteur * numero de colonne
+	var abs = j + 74 - tailleNombre*12 + j * 148
+	// il suffit de multiplier par le nombre de lignes puis d'ajouter
+	var ord = i * 148 + 90
+	if(nb != 0){
+		if(i != ii || j != jj){
+			context.fillStyle = couleurFond
+			context.fillRect(10+j*148, 10+i*148, 138, 138)
+			nombres(nb, abs , ord, couleurNombre);
+		}
+		else{
+			context.fillStyle = couleurFond
+			context.fillRect(10+j*148, 10+i*148, 138-k, 138-k)
+			nombres(nb, abs , ord, couleurNombre);
+		}
+	}
+}
+
+function afficherTableau(tablo, ii, jj, k){
+	// affiche un tableau de nombre dans le canvas
+	/*	console.log("afficher tableau ")
+	console.log(tablo)
+	console.log("FIN afficher tableau")*/
+	// console.log(ii)
+	// console.log(jj)
+	// console.log(k)
+	for (var i = 0; i < 4; i++) {
+		for (var j = 0; j < 4; j++) {
+			// console.log(tablo[i][j])
+			nombreCase(tablo[i][j], i, j, ii, jj, k)
+		}
+	}
+}
+
+function clavier(e){
+	// gestion des événements clavier
+	/*
+	sans doute à réécrire une fois "zeros" améliorée
+	*/
+	// console.log(e.keyCode)
+	mvtPossible = false;
+	if (e.keyCode == 38) {
+		// console.log("haut");
+		grille = deplacer(grille, "HAUT");
+	}
+	// Flêche du haut préssée
+	else if (e.keyCode == 40) {
+		// console.log("bas");
+		grille = deplacer(grille, "BAS");
+	}
+	//touche z pressee
+	else if (e.keyCode == 37) {
+		// console.log("gauche");
+		grille = deplacer(grille, "GAUCHE");
+	}
+	// touche s pressee
+	else if (e.keyCode == 39) {
+		// console.log("droite");
+		grille = deplacer(grille, "DROITE");
+	}
+	if (mvtPossible){
+		sorties = zeros(grille)
+		grille = sorties[0]
+		ii = sorties[1]
+		jj = sorties[2]
+		k = 100
+		return grille
+	}
+
+}
+
+
+
+/*
+Tests
+*/
+// calculs du jeu
+
+// console.log("test aGauche2")
+
+// console.log("entree :")
+// console.log(tableau_dessai)
+
+// var resultat = aGauche2(tableau_dessai);
+// console.log("sortie :")
+// console.log(resultat)
+
+// console.log("resultat attendu :")
+// console.log(resultat_attendu)
+
+// comparerTableau(resultat_attendu, resultat);
+
+// console.log("fin test aGauche2")
+
+// console.log("test aDroite")
+
+// console.log("entree :")
+// console.log(tableau_dessai)
+
+// var resultat = aDroite(tableau_dessai);
+// console.log("sortie :")
+// console.log(resultat)
+
+// console.log("resultat attendu :")
+// console.log(resultatDROITE)
+
+// comparerTableau(resultatDROITE, resultat);
+// console.log("fin test aDroite")
+
+
+// console.log("test enHaut")
+
+// console.log("entree :")
+// console.log(tableau_dessai)
+
+// var resultat = enHaut(tableau_dessai);
+// console.log("sortie :")
+// console.log(resultat)
+
+// console.log("resultat attendu :")
+// console.log(resultatHAUT)
+
+// comparerTableau(resultatHAUT, resultat);
+// console.log("fin test enHaut")
+
+// console.log("test enBas")
+
+// console.log("entree :")
+// console.log(tableau_dessai)
+
+// var resultat = enBas(tableau_dessai);
+// console.log("sortie :")
+// console.log(resultat)
+
+// console.log("resultat attendu :")
+// console.log(resultatHAUT)
+
+// comparerTableau(resultatBAS, resultat);
+// console.log("fin test enBas")
+
+// console.log("test zeros")
+
+// console.log("entree :")
+// console.log(tableau_dessai)
+
+// var resultat = zeros(tableau_dessai);
+// console.log("sortie :")
+// console.log(resultat)
+
+// console.log("fin test zeros")
+
+
+
+
+
+
+
+
+
+
+// affichages
+/*var x = 1234567;
+
+console.log(x.toString().length)
+
+console.log(tableau_dessai)
+
+var nouvotableau =aGauche(tableau_dessai)
+
+console.log(nouvotableau)
+console.log(resultat_attendu)
+
+console.log("comparaison 1")
+comparerTableau(tableau_dessai, tableau_dessai);
+console.log("comparaison 2")
+comparerTableau(tableau_dessai, resultat_attendu);
+*/
+
+</script>
+	<style type="text/css">
+		html, body {
+			margin: 0;
+			padding: 0;
+			background: #faf8ef;
+			color: #776e65;
+			font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
+			font-size: 18px; 
+		}
+
+		body {
+	  		margin: 80px 0; 
+		}
+		.container {
+	 		width: 600px;
+			margin: 0 auto;
+		}
+	    canvas {
+	    	display: block;
+	    	background:#B2ABA3
+	    }
+	    .title {
+			font-size: 80px;
+			font-weight: bold;
+			margin: 0;
+			display: block;
+			float: left;
+		}
+	</style>
+</head>
+
+<body>
+<div class="container">
+	<h1 id="title">2048</h1>
+	<canvas id="canvasElem" width="600" height="600">
+		Canvas failed
+	</canvas>	
+</div>
+
+</body>
+</html>
