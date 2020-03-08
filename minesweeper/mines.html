@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+
+  <style media="screen">
+    body {
+      color: #515151;
+    }
+  </style>
+</head>
+
+<body>
+  <img src="static/img/ldf.png" alt="">
+  <img src="static/img/nsi.png" alt="">
+  <h1>
+    Démineur
+  </h1>
+  <h2>
+    Placez vos drapeaux avec un clic droit, creusez avec un clic gauche.
+  </h2>
+  <p>
+    Le jeu en lui même ne présente que peu d'intérêt à être programmé.<br>
+
+    La seule étape intéressante est l'exploration automatique :<br>
+
+    Lorsqu'on clique sur une case vide, toutes les voisines n'ayant aucune mine <br>
+    doivent être creusées.<br>
+
+    C'est exactement le même principe que la fonction "remplir" de paint.<br>
+
+    On explore, de proche en proche, toutes les cases voisines. Si la case <br>
+    voisine  n'a pas de mine voisine, on la retourne et on explore encore. <br>
+    Si elle est voisine d'une mine, on s'arrête.<br>
+
+    Cette étape utilise un algorithme "récursif" qui sera abordé en terminale.<br>
+
+    Saurez-vous repérer le bug (que je n'ai jamais eu le courage de corriger)<br>
+    présent dans cette version ?
+
+  </p>
+  <img src="static/img/mines.png" alt="">
+</body>
+
+</html>
