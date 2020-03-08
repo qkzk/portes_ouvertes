@@ -7,7 +7,12 @@ date: 2020/03/08
 
 ## diaporama
 
-lien vers le [diapo](https://docs.google.com/presentation/d/1CBm63JEIcIvMcAVHODccfZmoJL3EJNBLYaGexLzu-UU/edit?usp=sharing), lancer en mode animation 
+lien vers le [diapo](https://docs.google.com/presentation/d/1CBm63JEIcIvMcAVHODccfZmoJL3EJNBLYaGexLzu-UU/edit?usp=sharing), lancer en mode animation
+
+* lancer, bouton reglages
+* auto advance when played
+* 5 seconds
+* loop
 
 ## Liste des jeux
 
