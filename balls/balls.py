@@ -108,12 +108,17 @@ def actuate_balls(balls):
     '''
     :SE: modifies the ball list in place
     '''
+    stop = False
     for ball in balls:
         ball["angle"] = (ball["angle"] + ball["speed"]) % 360
         ball["abs"], ball["ord"] = rotate_center(
             ball["angle"],
             (ball["abs"], ball["ord"])
         )
+        if ball["angle"] > 0.1235:
+            stop = True
+    # print(max([ball["angle"] for ball in balls]))
+    return stop
 
 
 def rotate(angle, vector):
@@ -187,53 +192,69 @@ def waitForPlayerToPressKey():
                 return
 
 
-# pygame initialisation
-pygame.init()
-mainClock = pygame.time.Clock()
-windowSurface = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
-pygame.display.set_caption('Patterns')
+def run_ball():
+    global windowSurface
+    global mainClock
+    global font
 
-# font settings
-font = pygame.font.SysFont(None, 48)
+    # pygame initialisation
+    pygame.init()
+    mainClock = pygame.time.Clock()
+    windowSurface = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
+    pygame.display.set_caption('Patterns')
 
-# show the "Start" screen
-windowSurface.fill(BACKGROUNDCOLOR)
-drawText('Patterns', font, windowSurface, (WINDOWWIDTH / 3), (WINDOWHEIGHT / 3))
-drawText('Press a key to start.', font, windowSurface,
-         (WINDOWWIDTH / 3) - 30, (WINDOWHEIGHT / 3) + 50)
-pygame.display.update()
-waitForPlayerToPressKey()
+    # font settings
+    font = pygame.font.SysFont(None, 48)
 
-############################################################
-#####################   GAME LOOP    #######################
-############################################################
-while True:
-    balls = create_balls()
-    while True:
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                terminate()
-
-            if event.type == KEYDOWN:
-                if event.key == K_ESCAPE:
-                    terminate()
-        # recupere les touches enfoncées
-        key = pygame.key.get_pressed()
-
-        # Draw the game world on the window.
-        windowSurface.fill(BACKGROUNDCOLOR)
-
-        # Draw the animation
-        draw_balls(balls)
-        draw_lines(balls)
-
-        # animate the balls
-        actuate_balls(balls)
-
-        # pygame : tick, update
-        mainClock.tick(FPS)
-        pygame.display.update()
-
-    # pygame : update, reset
+    # show the "Start" screen
+    windowSurface.fill(BACKGROUNDCOLOR)
+    drawText('Patterns', font, windowSurface, (WINDOWWIDTH / 3), (WINDOWHEIGHT / 3))
+    drawText('Press a key to start.', font, windowSurface,
+             (WINDOWWIDTH / 3) - 30, (WINDOWHEIGHT / 3) + 50)
     pygame.display.update()
-    waitForPlayerToPressKey()
+    # waitForPlayerToPressKey()
+
+    ############################################################
+    #####################   GAME LOOP    #######################
+    ############################################################
+    while True:
+        stop = False
+        balls = create_balls()
+        while not stop:
+            for event in pygame.event.get():
+                if event.type == QUIT:
+                    terminate()
+
+                if event.type == KEYDOWN:
+                    if event.key == K_ESCAPE:
+                        terminate()
+            # recupere les touches enfoncées
+            key = pygame.key.get_pressed()
+
+            # Draw the game world on the window.
+            windowSurface.fill(BACKGROUNDCOLOR)
+
+            # Draw the animation
+            draw_balls(balls)
+            draw_lines(balls)
+
+            # animate the balls
+            stop = actuate_balls(balls)
+            # print(stop)
+
+            # pygame : tick, update
+            mainClock.tick(FPS)
+            pygame.display.update()
+
+        # pygame : update, reset
+        pygame.display.update()
+        # waitForPlayerToPressKey()
+
+
+def main():
+    while True:
+        run_ball()
+
+
+if __name__ == '__main__':
+    main()
