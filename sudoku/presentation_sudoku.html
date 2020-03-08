@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+
+  <style media="screen">
+    body {
+      color: #515151;
+    }
+  </style>
+</head>
+
+<body>
+  <img src="static/img/ldf.png" alt="">
+  <img src="static/img/nsi.png" alt="">
+  <h1>
+    Résolution automatique d'un Sudoku
+  </h1>
+  <h2>
+    Le saviez-vous ?
+  </h2>
+
+  <!-- <p> -->
+    <ul>
+      <li>
+        Il existe
+        <span>
+          6 670 903 752 021 072 936 960
+        </span>
+        grilles de sudoku valides.
+      </li>
+      <li>
+        En tenant compte de nombreuses symétries, on se ramène à seulement
+        <span>
+          5 472 730 538
+        </span>
+        solutions.
+      </li>
+      <li>
+        Pour qu'une grille de départ soit considérée comme valide,<br>
+        on lui impose de ne conduire qu'à une unique solution.<br>
+
+        On démontre qu'il faut au moins 17 éléments de départ.<br>
+
+        Enlevez un indice, et vous aurez plusieurs solutions !
+
+      </li>
+    </ul>
+  <!-- </p> -->
+  <h2>
+    Résolution automatique d'un sudoku
+  </h2>
+  <p>
+    Le principe est très simple : on teste toutes les combinaisons possibles !<br>
+
+    Si l'on ne doit rien afficher, l'ordinateur trouve une solution en deux dixièmes
+    de seconde.
+  </p>
+  <p>
+  Un peu plus en détail, on essaye un nombre dans une case, puis dans la suivante etc.<br>
+
+  Jusqu'à arriver à deux possibilités : tout fonctionne (on a trouvé !)
+  ou c'est impossible...<br>
+
+  Dans ce cas on revient à la case précédente et on teste le suivant.<br>
+
+  Parfois il faut remonter bien haut dans les cases, c'est pour cela qu'une partie
+  de la grille peut sembler se vider.
+  </p>
+</body>
+
+</html>

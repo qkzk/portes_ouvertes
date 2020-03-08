@@ -93,7 +93,7 @@ def sudoku(grille, n=0):
             print("ligne {0} colonne {1} - valeur {2}\n".format(i, j, valeur))
 
             print(grille)
-            time.sleep(3)
+            # time.sleep(3)
             # # fin des affichages intermédiaires
             if sudoku(grille, n):
                 return True
