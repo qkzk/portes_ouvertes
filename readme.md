@@ -12,3 +12,4 @@ date: 2020/03/08
 3. [minesweeper](minesweeper)
 4. [balls](balls)
 5. [timber](timber)
+6. [sudoku](sudoku)
