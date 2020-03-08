@@ -129,11 +129,10 @@ function draw() {
   }
   else if (dither) {
     if (!doneDithering) {
-      img = makeDithered(video, 1);
+      ditheredImg = makeDithered(video, 1);
       doneDithering = true;
     }
-    image(img, 0, 0, width, height);
-    // Apply gray filter to the whole canvas
+    image(ditheredImg, 0, 0, width, height);
   }
   else {
     image(video, 0, 0, width, height);
