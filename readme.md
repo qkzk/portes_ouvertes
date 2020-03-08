@@ -24,7 +24,7 @@ lien vers le [diapo](https://docs.google.com/presentation/d/1CBm63JEIcIvMcAVHODc
 6. [sudoku](sudoku) résolution automatique d'un sudoku avec backtracking
     améliorer le visu, créer un affichage dans pygame
 7. [game_of_life](game_of_life) jeu de la vie, animation en boucle
-    améliorer le visu, créer une config d'un truc qui tourne tout seul
+    avec un gun qui tourne indéfiniment
 8. [plus court chemin](http://hmalherbe.fr/thalesm/gestclasse/documents/Premiere_NSI/Animations/k_plus_proches_voisins/Plus_court_chemin/Plus_court_chemin.html)
     plutôt simple à comprendre, peut-être ajouter une explication sur les algos glouton
 9. [sac à dos](http://hmalherbe.fr/thalesm/gestclasse/documents/Premiere_NSI/Animations/sac_a_dos/p5.js/sac_a_dos.html)
@@ -32,3 +32,4 @@ lien vers le [diapo](https://docs.google.com/presentation/d/1CBm63JEIcIvMcAVHODc
 10. [kNN](http://hmalherbe.fr/thalesm/gestclasse/documents/Premiere_NSI/Animations/k_plus_proches_voisins/k_plus_proches_voisins.html)
     pas évident à comprendre
 11. [photomaton](photo_booth) modifier et animer une capture vidéo (nécessite une webcam...)
+12. [morpion](morpion) utilise l'algorithme minimax
