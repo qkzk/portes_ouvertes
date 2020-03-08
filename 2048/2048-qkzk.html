@@ -2,7 +2,7 @@
 <html>
 <head>
 	<title>2048</title>
-<style> 
+<style>
 	body{
 		background-color:write
 
@@ -10,14 +10,14 @@
 
 </style>
 <script >
-	
+
 //variables internes
 //variables
 
 var boucleJeu; //appelée pour refresh
 var intervalTemps = 30; //temps entre 2 refresh en ms
 var context; //le contexte 2d
- 
+
 // Constantes du jeu
 var largeur_fenetre = 600; //taille du canvas
 var hauteur_fenetre = 600; //hauteur du canvas
@@ -40,7 +40,7 @@ var tableauPresentation = [ // toutes les valeurs pour affichage
 [32,2,128,1024],
 [16,64,256,256],
 [2048,4096,512,0],
-]; 
+];
 
 
 var tableau_dessai=[
@@ -175,7 +175,7 @@ function aGauche2(tableau){
 	    		// console.log("cas 0 - 1")
 	    		// console.log(ligne)
 	        }
-	        else{	
+	        else{
 	            ligne[1]=ligne[2]
 	            ligne[2]=ligne[3]
 	            ligne[3]=0
@@ -255,13 +255,13 @@ function deplacer(tableau, direction){
 	// etape inutile pourrait etre zappee
 	if (direction == "GAUCHE"){
 		return aGauche2(tableau)
-	}	
+	}
 	if (direction == "DROITE"){
 		return aDroite(tableau)
-	}	
+	}
 	if (direction == "HAUT"){
 		return enHaut(tableau)
-	}	
+	}
 	if (direction == "BAS"){
 		return enBas(tableau)
 	}
@@ -286,7 +286,7 @@ function zeros(tableau){
 	// console.log(nbZeros)
 	if(nbZeros == 0){
 		alive = false;
-		return [tableau,0,0]	
+		return [tableau,0,0]
 	}
 	else{
 		var coordonneesZero = listeZeros[Math.floor(Math.random()*listeZeros.length)];
@@ -335,7 +335,7 @@ window.addEventListener('load', function () {
   context = elem.getContext('2d');
   if (!context) {
 	return;
-  } 
+  }
   // Boucle de rafraichissement du contexte 2D
   boucleJeu =setInterval(refreshGame, intervalTemps); //refresh tous les x ms
 false
@@ -351,7 +351,7 @@ function refreshGame() {
 	context.clearRect(0,0,largeur_fenetre,hauteur_fenetre);
 	context.fillStyle="#776e65";
 	for(var i = 0; i<= 600; i=i+148) { context.fillRect(0+i,0,10, 600); }
-	for(var i = 0; i<= 600; i=i+148) { context.fillRect(0,0+i, 600,10); }	
+	for(var i = 0; i<= 600; i=i+148) { context.fillRect(0,0+i, 600,10); }
 
 
 	//afficherTableau(tableauPresentation)
@@ -603,11 +603,11 @@ comparerTableau(tableau_dessai, resultat_attendu);
 			background: #faf8ef;
 			color: #776e65;
 			font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
-			font-size: 18px; 
+			font-size: 18px;
 		}
 
 		body {
-	  		margin: 80px 0; 
+	  		margin: 80px 0;
 		}
 		.container {
 	 		width: 600px;
@@ -630,9 +630,17 @@ comparerTableau(tableau_dessai, resultat_attendu);
 <body>
 <div class="container">
 	<h1 id="title">2048</h1>
+	<h2>
+		Déplacez-vous avec les flêches du clavier pour obtenir la tuile 2048.
+	</h2>
+	<p>
+		Le but du jeu est de faire glisser des tuiles sur une grille, pour combiner	<br>
+		les tuiles de mêmes valeurs et créer ainsi une tuile portant le nombre 2048.<br>
+		Projet de terminale présenté au bac l'an dernier.
+	</p>
 	<canvas id="canvasElem" width="600" height="600">
 		Canvas failed
-	</canvas>	
+	</canvas>
 </div>
 
 </body>
