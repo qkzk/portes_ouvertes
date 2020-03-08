@@ -39,10 +39,10 @@ def isValid(grille, n, valeur):
     '''
     # coordonnées des elements
     # exemple n = 37
-    i = n / 9                  # ligne : 4
+    i = n // 9                  # ligne : 4
     j = n % 9                  # colonne :  1
-    k = n / 27 * 3             # ligne de debut de bloc : 3
-    l = (n % 9) / 3 * 3        # colonne de debut de bloc : 0
+    k = n // 27 * 3             # ligne de debut de bloc : 3
+    l = (n % 9) // 3 * 3        # colonne de debut de bloc : 0
 
     # reunion des elements deja presents ds ligne, col, bloc
     valeurs_presentes = (
@@ -67,10 +67,10 @@ def sudoku(grille, n=0):
             return True
     # coordonnées des elements
     # exemple n = 37
-    i = n / 9                  # ligne : 4
+    i = n // 9                  # ligne : 4
     j = n % 9                  # colonne :  1
-    k = n / 27 * 3             # ligne de debut de bloc : 3
-    l = (n % 9) / 3 * 3        # colonne de debut de bloc : 0
+    k = n // 27 * 3             # ligne de debut de bloc : 3
+    l = (n % 9) // 3 * 3        # colonne de debut de bloc : 0
 
     # candidats possibles pour la cellule en cours
     # {0,...,9} - valeurs des lignes, colonnes, bloc
