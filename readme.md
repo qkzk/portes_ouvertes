@@ -14,7 +14,7 @@ lien vers le [diapo](https://docs.google.com/presentation/d/1CBm63JEIcIvMcAVHODc
 * 5 seconds
 * loop
 
-## Liste des jeux
+## Liste des jeux et activités
 
 1. [dodger](dodger) jeu d'adresse, éviter les adversaires.
 2. [2048](2048) remake du classique
@@ -31,3 +31,4 @@ lien vers le [diapo](https://docs.google.com/presentation/d/1CBm63JEIcIvMcAVHODc
     plus compliqué, préparer une explication simple
 10. [kNN](http://hmalherbe.fr/thalesm/gestclasse/documents/Premiere_NSI/Animations/k_plus_proches_voisins/k_plus_proches_voisins.html)
     pas évident à comprendre
+11. [photomaton](photo_booth) modifier et animer une capture vidéo (nécessite une webcam...)
