@@ -29,20 +29,32 @@ backtracking avec recursion minimale
 '''
 
 
-
-
-import numpy as np
 import time
+import numpy as np
+import pygame
+from pygame.locals import *
+CASE = 80
+WINDOWHEIGHT = CASE * 9 + 5  # hauteur de la fenetre
+WINDOWWIDTH = WINDOWHEIGHT  # LARGEUR de la fenetre
+TRAIT = 5
+
+BLACK = (0, 0, 0)  # black
+WHITE = (255, 255, 255)  # white
+CYAN = (0, 255, 255)  # cyan
+ORANGE = (255, 200, 0)  # yellow
+FPS = 100
+
+
 def isValid(grille, n, valeur):
     '''
     renvoie True si on peut mettre "valeur" en position "n"
     '''
     # coordonnées des elements
     # exemple n = 37
-    i = n / 9                  # ligne : 4
+    i = n // 9                  # ligne : 4
     j = n % 9                  # colonne :  1
-    k = n / 27 * 3             # ligne de debut de bloc : 3
-    l = (n % 9) / 3 * 3        # colonne de debut de bloc : 0
+    k = n // 27 * 3             # ligne de debut de bloc : 3
+    l = (n % 9) // 3 * 3        # colonne de debut de bloc : 0
 
     # reunion des elements deja presents ds ligne, col, bloc
     valeurs_presentes = (
@@ -59,6 +71,10 @@ def isValid(grille, n, valeur):
 
 
 def sudoku(grille, n=0):
+    assert type(n) == int
+
+    global windowSurface
+    global mainClock
 
     # prochain element et test de victoire
     while grille.A1[n] != 0:
@@ -67,18 +83,20 @@ def sudoku(grille, n=0):
             return True
     # coordonnées des elements
     # exemple n = 37
-    i = n / 9                  # ligne : 4
+    i = n // 9                  # ligne : 4
     j = n % 9                  # colonne :  1
-    k = n / 27 * 3             # ligne de debut de bloc : 3
-    l = (n % 9) / 3 * 3        # colonne de debut de bloc : 0
+    k = n // 27 * 3             # ligne de debut de bloc : 3
+    l = (n % 9) // 3 * 3        # colonne de debut de bloc : 0
 
     # candidats possibles pour la cellule en cours
     # {0,...,9} - valeurs des lignes, colonnes, bloc
+
     valeurs_possibles = set(range(1, 10)) - (
         set(grille[i].A1) |
         set(grille.T[j].A1) |
         set(grille[k:k+3, l:l+3].A1)
     )
+
     # # affichages intermédiaires
     # print("\n" * 10)
     # print(grille)
@@ -93,7 +111,8 @@ def sudoku(grille, n=0):
             print("ligne {0} colonne {1} - valeur {2}\n".format(i, j, valeur))
 
             print(grille)
-            time.sleep(3)
+            draw_grid(grille)
+            # time.sleep(1)
             # # fin des affichages intermédiaires
             if sudoku(grille, n):
                 return True
@@ -103,8 +122,89 @@ def sudoku(grille, n=0):
         return False
 
 
-if __name__ == '__main__':
-    entree = np.matrix("""
+def draw_grid(grille):
+    windowSurface.fill(BLACK)
+    draw_border()
+
+    for i in range(9):
+        for j in range(9):
+            if grille[i, j] != 0:
+                drawText(str(grille[i, j]), font,
+                         windowSurface, i * CASE + CASE / 3 + 5,
+                         j * CASE + CASE / 3 - 2)
+            if entree[i, j] != 0:
+                drawText(str(grille[i, j]), font,
+                         windowSurface, i * CASE + CASE / 3 + 5,
+                         j * CASE + CASE / 3 - 2,
+                         ORANGE)
+    mainClock.tick(FPS)
+    pygame.display.update()
+
+
+def draw_border():
+    for k in range(10):
+        draw_horizontal(k)
+        draw_vertical(k)
+    for k in range(4):
+        draw_square(k)
+
+
+def draw_square(k):
+    line_rect = pygame.Rect(0, 3 * k * CASE, WINDOWWIDTH - 5, 2 * TRAIT)
+    pygame.draw.rect(windowSurface, WHITE, line_rect)
+
+    line_rect = pygame.Rect(3 * k * CASE - 5, 0, 2 * TRAIT, WINDOWHEIGHT)
+    pygame.draw.rect(windowSurface, WHITE, line_rect)
+
+
+def draw_horizontal(k):
+    line_rect = pygame.Rect(0, k * CASE, WINDOWWIDTH, TRAIT)
+    pygame.draw.rect(windowSurface, WHITE, line_rect)
+
+
+def draw_vertical(k):
+    line_rect = pygame.Rect(k * CASE, 0, TRAIT, WINDOWHEIGHT)
+    pygame.draw.rect(windowSurface, WHITE, line_rect)
+
+
+def terminate():
+    # permet de quitter le jeu
+    pygame.quit()
+    sys.exit()
+
+
+def drawText(text, font, surface, x, y, color=WHITE):
+    # permet d'ecrire
+    textobj = font.render(text, 1, color)
+    textrect = textobj.get_rect()
+    textrect.topleft = (x, y)
+    surface.blit(textobj, textrect)
+
+
+def run_sudoku(debut):
+    global windowSurface
+    global mainClock
+    global font
+    global entree
+
+    # print(isValid(entree1, 1, 8))
+    entree = debut
+    print(entree)
+    grille = entree.copy()
+    pygame.init()
+    mainClock = pygame.time.Clock()
+    windowSurface = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
+    pygame.display.set_caption("Résolution automatique d'un Sudoku")
+    # taille et type de la fonte
+    font = pygame.font.SysFont(None, 64)
+    # Draw the game world on the window.
+    windowSurface.fill(BLACK)
+    sudoku(grille)
+
+
+def start(compteur):
+    if compteur == 0:
+        return np.matrix("""
         8 0 0 1 0 9 0 7 0;
         0 9 0 0 0 0 8 0 0;
         5 0 3 0 4 0 0 0 0;
@@ -114,36 +214,30 @@ if __name__ == '__main__':
         0 0 0 0 9 0 4 0 1;
         0 0 6 0 0 0 0 2 0;
         0 5 0 4 0 2 0 0 3
-    """)
+        """)
 
-    entree1 = np.matrix(
-        [[5, 1, 7, 6, 0, 0, 0, 3, 4],
-         [2, 8, 9, 0, 0, 4, 0, 0, 0],
-         [3, 4, 6, 2, 0, 5, 0, 9, 0],
-         [6, 0, 2, 0, 0, 0, 0, 1, 0],
-         [0, 3, 8, 0, 0, 6, 0, 4, 7],
-         [0, 0, 0, 0, 0, 0, 0, 0, 0],
-         [0, 9, 0, 0, 0, 0, 0, 7, 8],
-         [7, 0, 3, 4, 0, 0, 5, 6, 0],
-         [0, 0, 0, 0, 0, 0, 0, 0, 0]]
-    )
+    else:
+        return np.matrix(
+            [[5, 1, 7, 6, 0, 0, 0, 3, 4],
+             [2, 8, 9, 0, 0, 4, 0, 0, 0],
+             [3, 4, 6, 2, 0, 5, 0, 9, 0],
+             [6, 0, 2, 0, 0, 0, 0, 1, 0],
+             [0, 3, 8, 0, 0, 6, 0, 4, 7],
+             [0, 0, 0, 0, 0, 0, 0, 0, 0],
+             [0, 9, 0, 0, 0, 0, 0, 7, 8],
+             [7, 0, 3, 4, 0, 0, 5, 6, 0],
+             [0, 0, 0, 0, 0, 0, 0, 0, 0]]
+        )
 
-    # print(isValid(entree1, 1, 8))
-    print(entree)
-    start = time.time()
-    sudoku(entree)
-    end = time.time()
-    print(entree)
-    print("{} seconds".format(end - start))
-    #
-    #
-    #
-    #
-    #
-    ##
-    ##
-    ##
-    ##
-    ##
-    ##
-    #
+
+def main():
+    compteur = 0
+    while True:
+        debut = start(compteur)
+        run_sudoku(debut)
+        time.sleep(5)
+        compteur = (compteur + 1) % 2
+
+
+if __name__ == '__main__':
+    main()
